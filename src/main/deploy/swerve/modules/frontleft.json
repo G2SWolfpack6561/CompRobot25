@@ -1,14 +1,14 @@
 {
     "location": {
-      "front": 12.5,
-      "left": 12.5
+      "front": 11,
+      "left": 11.5
     },
     "conversionFactors": {
       "angle": {
-        "gearRatio": 18.75
+        "gearRatio": 21.4
       },
       "drive": {
-        "gearRatio": 5.9,
+        "gearRatio": 8.14,
         "diameter": 4
       }
     },

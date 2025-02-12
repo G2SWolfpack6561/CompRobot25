@@ -130,10 +130,10 @@ public class DriveTrain extends SubsystemBase {
     @Override
     public void periodic() {
         Pose2d current_pose = swerveDrive.swerveDrivePoseEstimator.getEstimatedPosition();
-
-        if (!isSimulation) {
+    
+         if (!isSimulation) {
             limelightPeriodic(current_pose.getRotation().getDegrees());
-        }
+     }
 
         SmartDashboard.putNumber("RobotX", current_pose.getX());
         SmartDashboard.putNumber("RobotY", current_pose.getY());
