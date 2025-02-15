@@ -3,15 +3,6 @@
     "front": 12,
     "left": -11.5
   },
-  "conversionFactors": {
-    "angle": {
-      "gearRatio": 18.75
-    },
-    "drive": {
-      "gearRatio": 5.9,
-      "diameter": 4
-    }
-  },
   "absoluteEncoderOffset": 121.3262,
   "drive": {
     "type": "sparkmax_neo",

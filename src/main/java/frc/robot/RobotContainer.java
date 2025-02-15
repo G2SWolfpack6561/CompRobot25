@@ -44,7 +44,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    m_driveTrain.setDefaultCommand(m_driveTrain.moveManual(() -> m_driverController.getLeftX(),
+    m_driveTrain.setDefaultCommand(m_driveTrain.moveManual(() -> -m_driverController.getLeftX(),
                                                           () -> m_driverController.getLeftY(),
                                                           () -> m_driverController.getRightX()));
   }
