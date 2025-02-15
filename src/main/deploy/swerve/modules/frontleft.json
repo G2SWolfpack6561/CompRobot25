@@ -1,46 +1,46 @@
 {
-    "location": {
-      "front": 11,
-      "left": 11.5
-    },
-    "conversionFactors": {
-      "angle": {
-        "gearRatio": 21.4
-      },
-      "drive": {
-        "gearRatio": 8.14,
-        "diameter": 4
-      }
-    },
-    "absoluteEncoderOffset": 32.6953125,
-    "drive": {
-      "type": "sparkflex_vortex",
-      "id": 30,
-      "p": 3.2732E-08,
-      "i": 0,
-      "d": 0.0,
-      "f": 0,
-      "iz": 0,
-      "canbus": null
-    },
-    "inverted": {
-      "drive": true,
-      "angle": true
-    },
+  "location": {
+    "front": 11,
+    "left": 11.5
+  },
+  "conversionFactors": {
     "angle": {
-      "type": "sparkflex_vortex",
-      "id": 20,
-      "p": 0.086168,
-      "i": 0,
-      "d": 0.0,
-      "f": 0,
-      "iz": 0,
-      "canbus": null
+      "gearRatio": 18.75
     },
-    "encoder": {
-      "type": "cancoder",
-      "id": 25,
-      "canbus": null
-    },
-    "absoluteEncoderInverted": false
-  }
+    "drive": {
+      "gearRatio": 5.9,
+      "diameter": 4
+    }
+  },
+  "absoluteEncoderOffset": 125.63476,
+  "drive": {
+    "type": "sparkmax_neo",
+    "id": 30,
+    "p": 3.2732E-08,
+    "i": 0,
+    "d": 0.0,
+    "f": 0,
+    "iz": 0,
+    "canbus": null
+  },
+  "inverted": {
+    "drive": false,
+    "angle": true
+  },
+  "angle": {
+    "type": "sparkmax_neo",
+    "id": 20,
+    "p": 0.086168,
+    "i": 0,
+    "d": 0.0,
+    "f": 0,
+    "iz": 0,
+    "canbus": null
+  },
+  "encoder": {
+    "type": "cancoder",
+    "id": 25,
+    "canbus": null
+  },
+  "absoluteEncoderInverted": false
+}
