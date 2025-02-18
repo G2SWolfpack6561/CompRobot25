@@ -49,7 +49,7 @@ public class DriveTrain extends SubsystemBase {
 
     boolean                          hasTarget              = true;
 
-    SwerveDrive                      swerveDrive;
+    public SwerveDrive                      swerveDrive;
 
     private boolean                  isSimulation           = !RobotBase.isReal();
 
