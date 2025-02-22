@@ -434,9 +434,9 @@ public class DriveTrain extends SubsystemBase {
      * @return void
      */
     private void limelightPeriodic(double degrees) {
-        var limelightPost = limelight.getPoseEstimate(degrees);
-        if (limelightPost.tagCount > 0) {
-            swerveDrive.addVisionMeasurement(limelightPost.pose, limelightPost.timestampSeconds);
+        var limelightPoseEstimate = limelight.getPoseEstimate(degrees);
+        if (limelightPoseEstimate != null && limelightPoseEstimate.tagCount > 0) {
+            swerveDrive.addVisionMeasurement(limelightPoseEstimate.pose, limelightPoseEstimate.timestampSeconds);
         }
     }
 
