@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Climb",
+      "request": "launch",
+      "mainClass": "frc.robot.commands.Climb",
+      "projectName": "CompRobot25"
+    },
+    {
+      "type": "java",
       "name": "Main",
       "request": "launch",
       "mainClass": "frc.robot.Main",
