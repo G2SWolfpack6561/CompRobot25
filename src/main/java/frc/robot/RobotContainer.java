@@ -5,11 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Climb;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,12 +34,30 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         configureBindings();
-    
-    private final XboxController controller = new Xboxc
+        configureButtonBindings();
     }
-public class Climb {
-    private final CommandXboxController m_
+
+    private final XboxController controller = new XboxController(0);  // Controller on port 0
+    private final Climb climb = new Climb();  // Create the Climb object
+
+    // Configure button mappings
+
+    private void configureButtonBindings() {
+        // Button A (button number 1 on the Xbox controller) triggers climbing function
+        JoystickButton buttonA = new JoystickButton(controller, XboxController.Button.kA.value);
+        
+        // When A is pressed, call the `turnThreeRevolutions` method
+        buttonA.onTrue(new InstantCommand(() -> climb.turnRevolutions()));
+    }
+
+    public XboxController getController() {
+        return controller;
+    
 }
+
+   
+
+
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
      * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
