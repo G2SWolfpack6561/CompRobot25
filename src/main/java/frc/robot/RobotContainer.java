@@ -5,6 +5,9 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.ClimbDown;
+import frc.robot.commands.ClimbUp;
+import frc.robot.subsystems.Climber;
 import frc.robot.commands.Climb;
 import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.wpilibj.XboxController;
@@ -26,8 +29,16 @@ public class RobotContainer {
     // may also provide the video stream for drive camera.
     LimelightDevice m_limelight = new LimelightDevice("limelight");
 
+    // The climber will have buttons wired up in configureBindings.
+    private final Climber m_climber = new Climber();
+    
+    // There are some commands available for the DriveTrain but the main feature
+    // to be aware of is the default command wired up in the configureBindings.
+
     private final DriveTrain m_driveTrain = new DriveTrain(m_limelight);
 
+    // This is the main driver controller.  Right now we'll also use this for climbing
+    // but we may add a second controller to move the config over there.
     private final CommandXboxController m_driverController =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
@@ -68,6 +79,13 @@ public class RobotContainer {
      * joysticks}.
      */
     private void configureBindings() {
+
+        // we'll run the climb-up command while the Y button is pressed; the A button will
+        // run the climb-down command
+        //
+        // IF THE MOTOR RUNS WRONG DIRECTION, invert the motor in Climber subsystem
+        m_driverController.y().whileTrue(new ClimbUp(m_climber));
+        m_driverController.a().whileTrue(new ClimbDown(m_climber));
 
         // TODO - add elevator, intake, and any other controls we need here
 
