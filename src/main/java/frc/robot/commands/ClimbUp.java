@@ -25,7 +25,7 @@ public class ClimbUp extends Command {
   
     @Override
     public void end(boolean interrupted) {
-        climber.stop();
+        climber.maintain();
     }
   
     @Override

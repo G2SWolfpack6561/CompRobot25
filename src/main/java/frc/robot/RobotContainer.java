@@ -7,9 +7,12 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ClimbDown;
 import frc.robot.commands.ClimbUp;
+import frc.robot.commands.armcommand;
+import frc.robot.commands.suckinalage;
 import frc.robot.subsystems.Climber;
-import frc.robot.commands.Climb;
 import frc.robot.subsystems.DriveTrain;
+import frc.robot.subsystems.arm;
+import frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,6 +31,8 @@ public class RobotContainer {
     // The Limelight is used for AprilTag processing and pose estimation but
     // may also provide the video stream for drive camera.
     LimelightDevice m_limelight = new LimelightDevice("limelight");
+    intake m_Intake;
+    arm m_Arm;
 
     // The climber will have buttons wired up in configureBindings.
     private final Climber m_climber = new Climber();
@@ -41,18 +46,26 @@ public class RobotContainer {
     // but we may add a second controller to move the config over there.
     private final CommandXboxController m_driverController =
         new CommandXboxController(OperatorConstants.kDriverControllerPort);
+        // add new for Op controller
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        m_Intake = new intake();
+        m_Arm = new arm();
+        
         configureBindings();
-        configureButtonBindings();
+        //configureButtonBindings();
     }
 
     private final XboxController controller = new XboxController(0);  // Controller on port 0
-    private final Climb climb = new Climb();  // Create the Climb object
+    //private final XboxController controllerOp = new XboxController(port:1) // CSA NJ
+
+    // New operator controller, rebind your climb & other functions to controllerOp
+
+    //private final Climb climb = new Climb();  // Create the Climb object
 
     // Configure button mappings
-
+/*
     private void configureButtonBindings() {
         // Button A (button number 1 on the Xbox controller) triggers climbing function
         JoystickButton buttonA = new JoystickButton(controller, XboxController.Button.kA.value);
@@ -60,7 +73,7 @@ public class RobotContainer {
         // When A is pressed, call the `turnThreeRevolutions` method
         buttonA.onTrue(new InstantCommand(() -> climb.turnRevolutions()));
     }
-
+*/
     public XboxController getController() {
         return controller;
     
@@ -86,6 +99,11 @@ public class RobotContainer {
         // IF THE MOTOR RUNS WRONG DIRECTION, invert the motor in Climber subsystem
         m_driverController.y().whileTrue(new ClimbUp(m_climber));
         m_driverController.a().whileTrue(new ClimbDown(m_climber));
+        m_driverController.rightBumper().whileTrue(new suckinalage(m_Intake));
+        m_driverController.leftBumper().whileTrue(new suckinalage(m_Intake));
+        m_Arm.setDefaultCommand(new armcommand(m_Arm, ()-> m_driverController.getRawAxis(5)));
+        
+
 
         // TODO - add elevator, intake, and any other controls we need here
 

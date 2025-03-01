@@ -16,7 +16,7 @@ public final class Constants {
   public static class DeviceConstants {
     // set this to whatever the CAN ID of the controller connected to the 
   //climber motor is
-    public static final int kClimberControllerId = 8;
+    public static final int kClimberControllerId = 4;
   }
 
   public static class OperatorConstants {
