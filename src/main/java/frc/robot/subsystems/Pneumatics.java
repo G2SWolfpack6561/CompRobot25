@@ -45,9 +45,6 @@ package frc.robot.subsystems;
                         // Method to turn off the compressor
                         public void disableCompressor() {
                             m_compressor.disable();                                      
- 
- //if (m_driverController.getRawButton(kDoubleSolenoid)) {
- //   m_doubleSolenoid.toggle();
- // }
+
 }    
 }

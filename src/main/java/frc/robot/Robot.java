@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
   @Override
     public void robotInit() {
         // Initialize the Xbox controller and solenoid
-        xboxController = new XboxController(0);        // Assuming controller is on port 0
+        xboxController = new XboxController(1);        // Assuming controller is on port 0
         doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);     // DoubleSolenoid on PCM channels 0 and 1
         solenoidState = false;                         // Start with solenoid retracted (kReverse)
         lastButtonState = false;                       // Initially, the button isn't pressed

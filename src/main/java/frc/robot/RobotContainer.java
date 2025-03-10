@@ -57,12 +57,8 @@ public class RobotContainer {
         configureBindings();
     }
 
-    private final XboxController controller = new XboxController(0);  // Controller on port 0
+    private final CommandXboxController controller = new CommandXboxController(OperatorConstants.kOperatorControllerPort);  // Controller on port 0
     
-    public XboxController getController() {
-        return controller;
-    }
-
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
      * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
@@ -78,16 +74,16 @@ public class RobotContainer {
         // run the climb-down command
         //
         // IF THE MOTOR RUNS WRONG DIRECTION, invert the motor in Climber subsystem
-        m_driverController.leftTrigger().whileTrue(new ClimbUp(m_climber));
-        m_driverController.rightTrigger().whileTrue(new ClimbDown(m_climber));
+        controller.leftTrigger().whileTrue(new ClimbUp(m_climber));
+        controller.rightTrigger().whileTrue(new ClimbDown(m_climber));
         
         //Algae intake
-        m_driverController.rightBumper().whileTrue(new suckinalage(m_Intake));
-        m_driverController.leftBumper().whileTrue(new suckinalage(m_Intake));
+        controller.rightBumper().whileTrue(new suckinalage(m_Intake));
+        controller.leftBumper().whileTrue(new suckinalage(m_Intake));
                       
         //Arm up/down        
         //m_Arm.setDefaultCommand(new armcommand(m_Arm, ()-> m_driverController.getRawAxis(5)));
-        m_driverController.y().whileTrue(new armcommand(m_Arm, .1));
+        //controller.y().whileTrue(new armcommand(m_Arm, .1));
 
         // TODO - add elevator, intake, and any other controls we need here
 
