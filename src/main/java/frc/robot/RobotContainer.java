@@ -88,8 +88,13 @@ public class RobotContainer {
         // TODO - add elevator, intake, and any other controls we need here
 
         // wiring the default command for the drive train to the driver controller
-        m_driveTrain.setDefaultCommand(m_driveTrain.moveManual(() -> -m_driverController.getLeftY(),
-            () -> -m_driverController.getLeftX(), () -> -m_driverController.getRightX()));
+        m_driveTrain.setDefaultCommand(m_driveTrain.moveManual(() -> deadZone(-m_driverController.getLeftY(), 0.1),
+            () -> deadZone(-m_driverController.getLeftX(),0.1), () -> deadZone( -m_driverController.getRightX(),0.1)));
+    }
+
+    double deadZone(double value, double deadZone)
+    {
+        return value > deadZone ? value : value < -deadZone ? value : 0;
     }
 
     /**
