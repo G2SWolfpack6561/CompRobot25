@@ -21,7 +21,7 @@ public class arm extends SubsystemBase {
   SparkClosedLoopController maintain;
   /** Creates a new arm. */
   public arm() {
-    armmotor = new SparkMax(6, MotorType.kBrushless);
+    armmotor = new SparkMax(4, MotorType.kBrushless);
       config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake);
 

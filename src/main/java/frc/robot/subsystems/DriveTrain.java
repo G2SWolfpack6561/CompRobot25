@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.wpilibj.RobotBase.isReal;
-
 import java.io.File;
 import java.util.function.DoubleSupplier;
-
 import javax.naming.ConfigurationException;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -15,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +25,6 @@ import frc.robot.commands.drivebase.MoveFacingCommand;
 import frc.robot.commands.drivebase.MoveManualCommandField;
 import frc.robot.commands.drivebase.MoveToCommand;
 import frc.robot.commands.drivebase.StopCommand;
-import frc.robot.config.AllianceLandmarksConfig;
 import frc.robot.config.ConfigurationLoader;
 import frc.robot.config.DriveTrainConfig;
 import swervelib.SwerveController;
@@ -36,6 +33,15 @@ import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The drive base subsystem for the robot.
@@ -65,7 +71,9 @@ public class DriveTrain extends SubsystemBase {
     private PIDController            xy_PID                 = new PIDController(6.0, 0.0, 0.0);
 
     private final TrapezoidProfile   r_profile              = new TrapezoidProfile(
-            new TrapezoidProfile.Constraints(30.0, 4.5));                                      // TODO:
+            new TrapezoidProfile.Constraints(30.0, 4.5));                                      
+    
+    // TO DO:
     // Maxrotational
     // speed/accel?
 
@@ -85,10 +93,8 @@ public class DriveTrain extends SubsystemBase {
 
     private DriveTrainConfig driveBaseSubsystemConfig;
 
-    private AllianceLandmarksConfig  allianceLandmarksConfig;
-
     private LimelightDevice limelight;
-
+    
     /**
      * Constructor
      */
@@ -103,9 +109,10 @@ public class DriveTrain extends SubsystemBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    
+    setupPathPlanner();
 
         // Configure Swerve Controller
-        //////////////////////////////////////////////////
 
         xy_PID.setTolerance(0.05, 0.05);
         xy_PID.setIntegratorRange(-0.04, 0.04);
@@ -142,6 +149,7 @@ public class DriveTrain extends SubsystemBase {
      *
      * @return void
      */
+
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run when in simulation
@@ -272,6 +280,7 @@ public class DriveTrain extends SubsystemBase {
      *
      * @return void
      */
+
     public void stop() {
         hasTarget   = true;
         xy_setpoint = new TrapezoidProfile.State();
@@ -286,6 +295,7 @@ public class DriveTrain extends SubsystemBase {
      * @param new_target for the robot
      * @return void
      */
+
     public void setTarget(Rotation2d new_target, Rotation2d current_pose) {
         r_target   = new_target;
         r_last     = MathUtil.angleModulus(r_target.getRadians() - current_pose.getRadians());
@@ -299,6 +309,7 @@ public class DriveTrain extends SubsystemBase {
      *
      * @return void
      */
+
     public void driveAtAngle(double x, double y) {
         Pose2d current_pose = getPose();
 
@@ -317,6 +328,7 @@ public class DriveTrain extends SubsystemBase {
      *
      * @return void
      */
+
     public void driveFacingTarget(double x, double y) {
         Pose2d current_pose = getPose();
 
@@ -339,6 +351,7 @@ public class DriveTrain extends SubsystemBase {
      * @param new_target for the robot
      * @return void
      */
+
     public void setTarget(Translation2d new_target, Translation2d current_pose) {
         xy_target   = new_target;
         xy_last     = Math.hypot(xy_target.getX() - current_pose.getX(), xy_target.getY() - current_pose.getY());
@@ -372,6 +385,7 @@ public class DriveTrain extends SubsystemBase {
      *
      * @return void
      */
+
     public void driveToTarget() {
         boolean at_xy, at_r;
         Pose2d  current_pose = getPose();
@@ -399,15 +413,15 @@ public class DriveTrain extends SubsystemBase {
      * 
      * @throws ConfigurationException
      */
+    
     private void loadConfigurationFiles() throws ConfigurationException {
         driveBaseSubsystemConfig = ConfigurationLoader.load("drivetrain.json", DriveTrainConfig.class);
-
-        allianceLandmarksConfig  = ConfigurationLoader.load("alliancelandmarks.json", AllianceLandmarksConfig.class);
     }
 
     /**
      * Loads configuration files and configures the Swerve Drive
      */
+
     private void configureSwerveDrive() {
         try {
             swerveDrive      = new SwerveParser(new File(Filesystem.getDeployDirectory(), "swerve"))
@@ -433,6 +447,7 @@ public class DriveTrain extends SubsystemBase {
      * @param degrees angle robot is facing
      * @return void
      */
+
     private void limelightPeriodic(double degrees) {
         var limelightPoseEstimate = limelight.getPoseEstimate(degrees);
         if (limelightPoseEstimate != null && limelightPoseEstimate.tagCount > 0) {
@@ -455,6 +470,7 @@ public class DriveTrain extends SubsystemBase {
      * @param currentPose of the robot
      * @return boolean true if within deadband otherwise false
      */
+
     private boolean setXYSpeedsFromTarget(Translation2d currentPose) {
         Double  x_err    = xy_target.getX() - currentPose.getX();
         Double  y_err    = xy_target.getY() - currentPose.getY();
@@ -483,6 +499,7 @@ public class DriveTrain extends SubsystemBase {
      * @param current_pose of the robot
      * @return boolean true if within deadband otherwise false
      */
+
     private boolean setRotationSpeedFromTarget(Rotation2d rotation) {
         Double  rotationSpeedDeltaToTarget    = MathUtil.angleModulus(r_target.getRadians() - rotation.getRadians());
         boolean rotationWithinAcceptableRange = Math.abs(rotationSpeedDeltaToTarget) < 0.01;
@@ -505,4 +522,112 @@ public class DriveTrain extends SubsystemBase {
         // test the rest first
         return false;
     }
-}
+    
+  /**
+   * Setup AutoBuilder for PathPlanner.
+   */
+  
+  public void setupPathPlanner()
+  {
+    // Load the RobotConfig from the GUI settings. You should probably
+    // store this in your Constants file
+    RobotConfig config;
+    try
+    {
+      config = RobotConfig.fromGUISettings();
+
+      final boolean enableFeedforward = true;
+      // Configure AutoBuilder last
+      AutoBuilder.configure(
+          this::getPose,
+          // Robot pose supplier
+          swerveDrive::resetOdometry,
+          // Method to reset odometry (will be called if your auto has a starting pose)
+          swerveDrive::getRobotVelocity,
+          // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+          (speedsRobotRelative, moduleFeedForwards) -> {
+            if (enableFeedforward)
+            {
+              swerveDrive.drive(
+                  speedsRobotRelative,
+                  swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                  moduleFeedForwards.linearForces()
+                               );
+            } else
+            {
+              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+            }
+          },
+          // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+          new PPHolonomicDriveController(
+              // PPHolonomicController is the built in path following controller for holonomic drive trains
+              new PIDConstants(5.0, 0.0, 0.0),
+              // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0)
+              // Rotation PID constants
+          ),
+          config,
+          // The robot configuration
+          () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent())
+            {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this
+          // Reference to this subsystem to set requirements
+                           );
+
+    } catch (Exception e)
+    {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+
+    //Preload PathPlanner Path finding
+    // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
+    PathfindingCommand.warmupCommand().schedule();
+  }
+
+    /**
+   * Get the path follower with events.
+   *
+   * @param pathName PathPlanner path name.
+   * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
+   */
+
+  public static Command getAutonomousCommand(String pathName)
+  {
+    // Create a path following command using AutoBuilder. This will also trigger event markers.
+    return new PathPlannerAuto(pathName);
+  }
+
+  /**
+   * Use PathPlanner Path finding to go to a point on the field.
+   *
+   * @param pose Target {@link Pose2d} to go to.
+   * @return PathFinding command
+   */
+
+  public Command driveToPose(Pose2d pose)
+  {
+// Create the constraints to use while pathfinding
+    PathConstraints constraints = new PathConstraints(
+        swerveDrive.getMaximumChassisVelocity(), 4.0,
+        swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
+
+// Since AutoBuilder is configured, we can use it to build pathfinding commands
+    return AutoBuilder.pathfindToPose(
+        pose,
+        constraints,
+        edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
+                                     );
+  }
+  }
+//}

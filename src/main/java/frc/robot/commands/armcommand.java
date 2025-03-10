@@ -22,6 +22,10 @@ public class armcommand extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
+  public armcommand(arm m_Arm2, double d) {
+    //TODO Auto-generated constructor stub
+  }
+
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

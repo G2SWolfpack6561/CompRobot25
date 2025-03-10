@@ -24,8 +24,8 @@ public class Climber extends SubsystemBase {
 
     // these rates are defined here to make them easy to find and adjust; these are used
     // to set the motor run rate for climbing up or down
-    private static final double UP_SPEED = -0.5;
-    private static final double DOWN_SPEED = -0.4;
+    private static final double UP_SPEED = -0.1;
+    private static final double DOWN_SPEED = -0.2;
 
     SparkClosedLoopController maintain;
     private final SparkMax climbMotor;
@@ -33,11 +33,11 @@ public class Climber extends SubsystemBase {
     
 
     public Climber() {
-        climbMotor =  new SparkMax(Constants.DeviceConstants.kClimberControllerId, MotorType.kBrushed);
+        climbMotor =  new SparkMax(Constants.DeviceConstants.kClimberControllerId, MotorType.kBrushless);
 
         // we do want to configure braking and current limits
         var config = new SparkMaxConfig();
-        config.smartCurrentLimit(50).idleMode(IdleMode.kBrake);
+        config.smartCurrentLimit(33).idleMode(IdleMode.kBrake);
         climbMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         maxconfig = new SparkMaxConfig();
         maxconfig.closedLoop.p(.15);

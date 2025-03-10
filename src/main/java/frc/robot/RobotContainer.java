@@ -13,12 +13,11 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.subsystems.arm;
 import frc.robot.subsystems.intake;
+import frc.robot.subsystems.Pneumatics;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+
 public class RobotContainer {
 
     // The Limelight is used for AprilTag processing and pose estimation but
@@ -42,6 +42,8 @@ public class RobotContainer {
 
     private final DriveTrain m_driveTrain = new DriveTrain(m_limelight);
 
+    //private final Pneumatics m_Pneumatics = new Pneumatics();
+
     // This is the main driver controller.  Right now we'll also use this for climbing
     // but we may add a second controller to move the config over there.
     private final CommandXboxController m_driverController =
@@ -51,36 +53,15 @@ public class RobotContainer {
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         m_Intake = new intake();
-        m_Arm = new arm();
-        
+        m_Arm = new arm();   
         configureBindings();
-        //configureButtonBindings();
     }
 
     private final XboxController controller = new XboxController(0);  // Controller on port 0
-    //private final XboxController controllerOp = new XboxController(port:1) // CSA NJ
-
-    // New operator controller, rebind your climb & other functions to controllerOp
-
-    //private final Climb climb = new Climb();  // Create the Climb object
-
-    // Configure button mappings
-/*
-    private void configureButtonBindings() {
-        // Button A (button number 1 on the Xbox controller) triggers climbing function
-        JoystickButton buttonA = new JoystickButton(controller, XboxController.Button.kA.value);
-        
-        // When A is pressed, call the `turnThreeRevolutions` method
-        buttonA.onTrue(new InstantCommand(() -> climb.turnRevolutions()));
-    }
-*/
+    
     public XboxController getController() {
         return controller;
-    
-}
-
-   
-
+    }
 
     /**
      * Use this method to define your trigger->command mappings. Triggers can be created via the
@@ -93,17 +74,20 @@ public class RobotContainer {
      */
     private void configureBindings() {
 
-        // we'll run the climb-up command while the Y button is pressed; the A button will
+        // we'll run the climb-up command while the right trigger is pressed; the left trigger will
         // run the climb-down command
         //
         // IF THE MOTOR RUNS WRONG DIRECTION, invert the motor in Climber subsystem
-        m_driverController.y().whileTrue(new ClimbUp(m_climber));
-        m_driverController.a().whileTrue(new ClimbDown(m_climber));
+        m_driverController.leftTrigger().whileTrue(new ClimbUp(m_climber));
+        m_driverController.rightTrigger().whileTrue(new ClimbDown(m_climber));
+        
+        //Algae intake
         m_driverController.rightBumper().whileTrue(new suckinalage(m_Intake));
         m_driverController.leftBumper().whileTrue(new suckinalage(m_Intake));
-        m_Arm.setDefaultCommand(new armcommand(m_Arm, ()-> m_driverController.getRawAxis(5)));
-        
-
+                      
+        //Arm up/down        
+        //m_Arm.setDefaultCommand(new armcommand(m_Arm, ()-> m_driverController.getRawAxis(5)));
+        m_driverController.y().whileTrue(new armcommand(m_Arm, .1));
 
         // TODO - add elevator, intake, and any other controls we need here
 
@@ -117,10 +101,9 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
-    public Command getAutonomousCommand() {
-
-        // this method is used when autonomous mode starts so we should be reading from the
-        // selector in Elastic / SmartDashboard to determine what auton command(s) we want
-        return null;
+    
+    public Command getAutonomousCommand()
+    {
+    return DriveTrain.getAutonomousCommand("New Auto");
     }
 }

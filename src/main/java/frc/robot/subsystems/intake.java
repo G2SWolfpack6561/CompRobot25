@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class intake extends SubsystemBase {
@@ -18,7 +17,7 @@ public class intake extends SubsystemBase {
   SparkMaxConfig config;
   /** Creates a new intake. */
   public intake() {
-    inatkeMax = new SparkMax(24??, MotorType.kBrushless);
+    inatkeMax = new SparkMax(7, MotorType.kBrushless);
     config = new SparkMaxConfig();
     config.idleMode(IdleMode.kBrake);
 

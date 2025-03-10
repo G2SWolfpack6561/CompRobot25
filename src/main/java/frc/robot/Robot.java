@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -15,9 +19,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
-
+  private XboxController xboxController;  // Xbox controller object
+  private DoubleSolenoid doubleSolenoid;              // Solenoid object
+  private boolean solenoidState;          // Track the solenoid's current state
+  private boolean lastButtonState;        // Track the previous button state
+  private boolean buttonPressed;
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -26,6 +34,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    CameraServer.startAutomaticCapture();  
   }
 
   /**
@@ -77,9 +86,37 @@ public class Robot extends TimedRobot {
     }
   }
 
+  @Override
+    public void robotInit() {
+        // Initialize the Xbox controller and solenoid
+        xboxController = new XboxController(0);        // Assuming controller is on port 0
+        doubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);     // DoubleSolenoid on PCM channels 0 and 1
+        solenoidState = false;                         // Start with solenoid retracted (kReverse)
+        lastButtonState = false;                       // Initially, the button isn't pressed
+        buttonPressed = false;                         // No button press detected
+    }
+
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    // Read the current state of button A (button 1 on the Xbox controller)
+    boolean currentButtonState = xboxController.getAButton();
+
+    // Check if the button has been pressed
+    if (currentButtonState && !lastButtonState) {
+        // Button was just pressed, toggle the solenoid state
+        if (solenoidState) {
+            doubleSolenoid.set(DoubleSolenoid.Value.kReverse);  // Retract the solenoid
+        } else {
+            doubleSolenoid.set(DoubleSolenoid.Value.kForward);  // Extend the solenoid
+        }
+        solenoidState = !solenoidState;  // Toggle the state for the next button press
+    }
+
+    // Update the last button state for the next iteration
+    lastButtonState = currentButtonState;
+}
+
 
   @Override
   public void testInit() {
