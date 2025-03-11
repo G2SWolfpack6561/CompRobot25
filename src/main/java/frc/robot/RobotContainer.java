@@ -15,6 +15,8 @@ import frc.robot.subsystems.arm;
 import frc.robot.subsystems.intake;
 import frc.robot.subsystems.Pneumatics;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,7 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 
 public class RobotContainer {
-
+    // This is the auton made selector
+    private final SendableChooser<String> m_chooser = new SendableChooser<String>();
     // The Limelight is used for AprilTag processing and pose estimation but
     // may also provide the video stream for drive camera.
     LimelightDevice m_limelight = new LimelightDevice("limelight");
@@ -55,6 +58,7 @@ public class RobotContainer {
         m_Intake = new intake();
         m_Arm = new arm();   
         configureBindings();
+        configureDashboard();
     }
 
     private final CommandXboxController controller = new CommandXboxController(OperatorConstants.kOperatorControllerPort);  // Controller on port 0
@@ -92,6 +96,13 @@ public class RobotContainer {
             () -> deadZone(-m_driverController.getLeftX(),0.1), () -> deadZone( -m_driverController.getRightX(),0.1)));
     }
 
+    private void configureDashboard(){
+        m_chooser.setDefaultOption("New auto", "New Auto");
+        SmartDashboard.putData(m_chooser);
+    }
+
+
+
     double deadZone(double value, double deadZone)
     {
         return value > deadZone ? value : value < -deadZone ? value : 0;
@@ -105,6 +116,6 @@ public class RobotContainer {
     
     public Command getAutonomousCommand()
     {
-    return DriveTrain.getAutonomousCommand("New Auto");
+        return DriveTrain.getAutonomousCommand(m_chooser.getSelected());
     }
 }
