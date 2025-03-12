@@ -59,6 +59,7 @@ public class RobotContainer {
         m_Arm = new arm();   
         configureBindings();
         configureDashboard();
+        configureLimelight();
     }
 
     private final CommandXboxController controller = new CommandXboxController(OperatorConstants.kOperatorControllerPort);  // Controller on port 0
@@ -101,7 +102,18 @@ public class RobotContainer {
         SmartDashboard.putData(m_chooser);
     }
 
+    /**
+     * We need to set the limelight pose and possibly configure the camera.
+     */
+    private void configureLimelight() {
+        // distances are in meters and rotations are degrees
+        // https://limelightlib-wpijava-reference.limelightvision.io/frc/robot/LimelightHelpers.html#setCameraPose_RobotSpace(java.lang.String,double,double,double,double,double,double)
+        LimelightHelpers.setCameraPose_RobotSpace(m_limelight.getName(),
+            0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 90.0d);
 
+        // set stream mode 2 so usb camera is main and limelight is thumbnail
+        LimelightHelpers.setStreamMode_PiPSecondary(m_limelight.getName());
+    }
 
     double deadZone(double value, double deadZone)
     {
